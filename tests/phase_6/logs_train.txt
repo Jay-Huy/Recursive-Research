@@ -1,0 +1,7 @@
+==================================================
+Model and Data Info:
+  Model Parameters: 16,838,656
+  Train Samples: 11,000
+  Validation Samples: 1,800
+==================================================
+Starting training...

@@ -1,0 +1,10 @@
+d_model: 512
+d_loop: 256
+n_heads: 8
+scale_mlp: 4
+n_prelude: 3 # 6
+n_loop: 12 # 8
+n_coda: 3 # 6
+max_train_loops: 6
+enforced: true
+tie_embeddings: true

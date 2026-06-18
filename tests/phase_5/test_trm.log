@@ -1,0 +1,11 @@
+==================================================
+TRM Stripped Model Report
+==================================================
+Total Parameters: 11,010,048
+H_cycles: 3
+L_cycles: 6
+L_layers: 2
+Max Macroscopic Loops (halt_max_steps): 16
+Depth per Macroscopic Loop: 42 layers
+Total Compute Depth: 672 layers
+==================================================

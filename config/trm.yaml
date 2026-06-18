@@ -1,0 +1,24 @@
+model_config:
+  model_type: TRM
+  hidden_size: 512
+  num_attention_heads: 8
+  L_layers: 1
+  L_cycles: 2
+  H_cycles: 6
+  max_train_loops: 6
+  seq_len: 2048
+  pos_encodings: rope
+  forward_dtype: float32
+  rope_theta: 10000.0
+
+data_config:
+  dataset_type: SymbolicReasoningDataset
+  data_dir: "data"
+  batch_size: 128
+
+training:
+  num_epochs: 10
+  lr: 0.001
+  eval_epoch: 1
+  use_wandb: false
+  wandb_project: "recursive-reasoning"

@@ -1,0 +1,14 @@
+--- Architectures Test Log ---
+1. Testing BaseLoopModel (BaseLoopConfig)...
+[OK] BaseLoopModel passed. Output shape matched [bsz, max_loops, seq_len, d_model]
+
+2. Testing PreludeCodaLoopModel Uniform (PreludeCodaConfig)...
+[OK] PreludeCodaLoopModel Uniform passed. Output shape matched.
+
+3. Testing PreludeCodaLoopModel Mismatched (d_loop != d_model)...
+[OK] PreludeCodaLoopModel Mismatched passed. Output shape matched and projections worked.
+
+4. Testing TRMStrippedModel (TRM module independent)...
+[OK] TRMStrippedModel passed. Output shape matched.
+
+SUCCESS: All architecture tests passed perfectly!

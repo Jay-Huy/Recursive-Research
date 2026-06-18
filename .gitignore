@@ -1,0 +1,30 @@
+# Ignored Folders
+docs/
+TinyRecursiveModels/
+Loop-Think-Generalize/
+wandb/
+.agents/
+data/
+outputs/
+.vscode/
+
+# Ignored Files
+test.ipynb
+TREE.md
+
+# Virtual Environments
+venv/
+env/
+myenv/
+.env
+
+# Python Cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# OS generated files
+.DS_Store
+Thumbs.db

@@ -1,0 +1,8 @@
+hidden_size: 512
+num_heads: 8
+L_layers: 2
+H_cycles: 3
+L_cycles: 6
+pos_encodings: "rope"
+forward_dtype: "float32"
+expansion: 4

@@ -1,0 +1,21 @@
+model_config:
+  model_type: BaseLoop
+  d_model: 512
+  n_heads: 8
+  scale_mlp: 4
+  n_layers: 4
+  max_train_loops: 6
+  enforced: true
+  tie_embeddings: true
+
+data_config:
+  dataset_type: SymbolicReasoningDataset
+  data_dir: "data"
+  batch_size: 128
+
+training:
+  num_epochs: 100
+  lr: 0.001
+  eval_epoch: 1
+  use_wandb: false
+  wandb_project: "recursive-reasoning"

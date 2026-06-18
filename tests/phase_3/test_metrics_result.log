@@ -1,0 +1,7 @@
+--- Metrics Core Test Log ---
+[OK] test_accuracy_metric() passed.
+[OK] test_entropy_metric() passed.
+[OK] test_distance_metric() passed.
+[OK] test_fixed_point_metric() passed.
+
+SUCCESS: All metric tests passed perfectly!
