@@ -4,7 +4,7 @@ TinyRecursiveModels/
 Loop-Think-Generalize/
 wandb/
 .agents/
-data/
+/data/
 outputs/
 .vscode/
 
