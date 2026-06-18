@@ -1,6 +1,6 @@
 model_config:
   model_type: BaseLoop
-  d_model: 512
+  d_model: 256
   n_heads: 8
   scale_mlp: 4
   n_layers: 4

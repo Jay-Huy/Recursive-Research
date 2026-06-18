@@ -1,7 +1,7 @@
 model_config:
   model_type: PreludeCoda
-  d_model: 512
-  d_loop: 512
+  d_model: 256
+  d_loop: 256
   n_heads: 8
   scale_mlp: 4
   n_prelude: 3
