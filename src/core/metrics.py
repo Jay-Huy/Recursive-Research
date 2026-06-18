@@ -170,8 +170,9 @@ class MetricCollection:
         self.metrics = metrics_dict
 
     def update(self, output: ReasoningOutput, targets: torch.Tensor):
-        for metric in self.metrics.values():
-            metric.update(output, targets)
+        with torch.no_grad():
+            for metric in self.metrics.values():
+                metric.update(output, targets)
 
     def compute(self) -> Dict[str, Any]:
         return {name: metric.compute() for name, metric in self.metrics.items()}
