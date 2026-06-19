@@ -47,6 +47,7 @@ class TrainingOrchestrator:
         
         self.early_stopping_patience = self.config.get('training', {}).get('early_stopping_patience', 0)
         self.best_val_loss = float('inf')
+        self.best_val_acc = -1.0
         self.patience_counter = 0
 
         # Setup Scheduler
@@ -157,11 +158,23 @@ class TrainingOrchestrator:
                 if self.logger is not None:
                     self.logger.log_metrics(val_metrics, split="val", step=epoch, loss=val_loss)
                 
+                if val_acc > self.best_val_acc:
+                    self.best_val_acc = val_acc
+                    if self.logger is not None:
+                        actual_run_name = self.logger.run.name
+                    else:
+                        actual_run_name = self.config.get('model_config', {}).get('model_type', 'run')
+                    
+                    import os
+                    os.makedirs("outputs/checkpoints", exist_ok=True)
+                    save_path = f"outputs/checkpoints/{actual_run_name}_best_val_acc.pt"
+                    torch.save(self.model.state_dict(), save_path)
+                    print(f"--> Saved new best checkpoint to {save_path} (Val Acc: {val_acc:.4f})")
+                
                 if self.early_stopping_patience > 0:
                     if val_loss < self.best_val_loss:
                         self.best_val_loss = val_loss
                         self.patience_counter = 0
-                        # TODO: Save checkpoint
                     else:
                         self.patience_counter += 1
                         if self.patience_counter >= self.early_stopping_patience:

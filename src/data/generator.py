@@ -134,8 +134,15 @@ def main():
         random.shuffle(paths)
         
         # Split into train and val
-        train_paths = paths[:train_target]
-        val_paths = paths[train_target:train_target+val_target]
+        if len(paths) >= total_needed:
+            train_paths = paths[:train_target]
+            val_paths = paths[train_target:train_target+val_target]
+        else:
+            # Not enough paths, split proportionally
+            val_count = max(1, int(len(paths) * (val_target / total_needed)))
+            train_count = len(paths) - val_count
+            train_paths = paths[:train_count]
+            val_paths = paths[train_count:]
         
         for p in train_paths:
             train_data.append(format_sample(p, rel_offset))

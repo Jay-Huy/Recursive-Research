@@ -35,26 +35,36 @@ class SimpleLoopModel(nn.Module):
         if config.tie_embeddings:
             self.lm_head.weight = self.wte.weight
             
-        self.apply(self._init_weights)
+        for name, module in self.named_modules():
+            self._init_weights(module, name)
 
-    def _init_weights(self, module):
-        if isinstance(module, nn.Linear):
-            std = 1.0 / math.sqrt(self.config.d_model)
-            torch.nn.init.trunc_normal_(module.weight, mean=0.0, std=std, a=-3*std, b=3*std)
+    def _init_weights(self, module, name=""):
+        std = math.sqrt(2 / (5 * self.config.d_model))
+        out_proj_std = std / math.sqrt(2 * self.config.effective_expected_depth)
+        
+        if isinstance(module, RMSNorm):
+            torch.nn.init.ones_(module.weight)
+        elif isinstance(module, nn.Linear):
+            if "wo" in name or "down_proj" in name:
+                torch.nn.init.trunc_normal_(module.weight, mean=0.0, std=out_proj_std, a=-3*out_proj_std, b=3*out_proj_std)
+            else:
+                torch.nn.init.trunc_normal_(module.weight, mean=0.0, std=std, a=-3*std, b=3*std)
             if module.bias is not None:
                 torch.nn.init.zeros_(module.bias)
         elif isinstance(module, nn.Embedding):
-            std = 1.0 / math.sqrt(self.config.d_model)
             torch.nn.init.trunc_normal_(module.weight, mean=0.0, std=std, a=-3*std, b=3*std)
 
     def initialize_state(self, input_embeds: torch.Tensor) -> torch.Tensor:
         """
         Reference Huginn-0125: Khởi tạo x_0 sử dụng state_init = "like-init"
-        Khởi tạo bằng Gaussian Noise std = 1/sqrt(d_model)
         """
         x = torch.randn_like(input_embeds)
-        std = 1.0 / math.sqrt(self.config.d_model)
-        torch.nn.init.trunc_normal_(x, mean=0.0, std=std, a=-3 * std, b=3 * std)
+        std = math.sqrt(2 / (5 * self.config.d_model))
+        if std > 0:
+            torch.nn.init.trunc_normal_(x, mean=0.0, std=std, a=-3 * std, b=3 * std)
+            x = x * math.sqrt(self.config.d_model) # embed_scale
+        else:
+            x.zero_()
         return x
 
     def forward(self, inputs: dict, num_loops: int = None):
@@ -66,6 +76,7 @@ class SimpleLoopModel(nn.Module):
         
         # 1. Đầu vào (Tokens -> Embeddings)
         input_embeds = self.wte(input_ids)
+        input_embeds = input_embeds * math.sqrt(self.config.d_model) # embed_scale
         
         # 2. Khởi tạo trạng thái vòng lặp đầu tiên
         if self.config.enforced:

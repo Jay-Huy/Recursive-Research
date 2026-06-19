@@ -4,9 +4,9 @@ model_config:
   d_loop: 128
   n_heads: 8
   scale_mlp: 4
-  n_prelude: 3
-  n_loop: 3
-  n_coda: 3
+  n_prelude: 2
+  n_loop: 8
+  n_coda: 2
   max_train_loops: 6
   enforced: true
   tie_embeddings: true
