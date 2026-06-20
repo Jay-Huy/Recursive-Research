@@ -61,7 +61,14 @@ class PreludeCodaLoopModel(nn.Module):
             self._init_weights(module, name)
 
     def _init_weights(self, module, name=""):
-        std = math.sqrt(2 / (5 * self.config.d_model))
+        dim_for_std = self.config.d_model
+        
+        # Nếu đang ở chế độ Mismatch và module thuộc về không gian d_loop
+        if getattr(self, "has_d_loop", False):
+            if "loop_blocks" in name or "adapter" in name or "project_out" in name:
+                dim_for_std = self.config.d_loop
+                
+        std = math.sqrt(2 / (5 * dim_for_std))
         out_proj_std = std / math.sqrt(2 * self.config.effective_expected_depth)
         
         if isinstance(module, RMSNorm):
@@ -81,7 +88,7 @@ class PreludeCodaLoopModel(nn.Module):
         Reference Huginn-0125: Khởi tạo x_0 sử dụng state_init = "like-init"
         """
         x = torch.randn_like(input_embeds)
-        std = math.sqrt(2 / (5 * self.config.d_model))
+        std = math.sqrt(2 / (5 * dim))
         if std > 0:
             torch.nn.init.trunc_normal_(x, mean=0.0, std=std, a=-3 * std, b=3 * std)
             x = x * math.sqrt(dim) # embed_scale
@@ -151,9 +158,8 @@ class PreludeCodaLoopModel(nn.Module):
         hidden_states_flat = hidden_states_history.view(bsz * num_loops, seqlen, d_loop_dim)
         
         # Up-projection if needed before Coda
-        if self.config.d_model != d_loop_dim:
-            hidden_states_flat = self.up_proj(hidden_states_flat)
-            
+        hidden_states_flat = self.project_out(hidden_states_flat)
+        
         # 8. Coda Blocks (chạy trên tất cả các bước lặp để vẽ đồ thị accuracy theo loop)
         x_coda = hidden_states_flat
         for block in self.coda_blocks:
