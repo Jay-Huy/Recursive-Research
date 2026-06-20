@@ -74,7 +74,12 @@ class PreludeCodaLoopModel(nn.Module):
         if isinstance(module, RMSNorm):
             torch.nn.init.ones_(module.weight)
         elif isinstance(module, nn.Linear):
-            if "wo" in name or "down_proj" in name:
+            if getattr(self, "has_d_loop", False) and self.config.enforced and name == "adapter":
+                # [Fix Cổ Chai] Anchor Init [0, I]: Lờ đi x, cho phép input_embeds đi qua 100% ở Epoch đầu
+                torch.nn.init.zeros_(module.weight)
+                with torch.no_grad():
+                    module.weight[:, dim_for_std:].copy_(torch.eye(dim_for_std))
+            elif "wo" in name or "down_proj" in name:
                 torch.nn.init.trunc_normal_(module.weight, mean=0.0, std=out_proj_std, a=-3*out_proj_std, b=3*out_proj_std)
             else:
                 torch.nn.init.trunc_normal_(module.weight, mean=0.0, std=std, a=-3*std, b=3*std)
