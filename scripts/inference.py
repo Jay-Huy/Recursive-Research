@@ -26,7 +26,13 @@ def main():
     parser.add_argument("--num_loops", type=int, default=None, help="Number of loops to run (Extrapolation test). If not set, uses max_train_loops.")
     parser.add_argument("--test_batches", type=int, default=None, help="Number of batches to run for quick testing.")
     parser.add_argument("--print_samples", type=int, default=5, help="Number of samples to print to console.")
+    parser.add_argument("--seed", type=int, default=None, help="Random seed for PyTorch initialization")
     args = parser.parse_args()
+
+    if args.seed is not None:
+        torch.manual_seed(args.seed)
+        if torch.cuda.is_available():
+            torch.cuda.manual_seed_all(args.seed)
 
     with open(args.config_path, "r") as f:
         config = yaml.safe_load(f)
@@ -60,7 +66,7 @@ def main():
         model = MODEL_REGISTRY.build(model_type, config=model_config, vocab_size=metadata["vocab_size"], max_train_loops=max_train_loops)
     else:
         model_config["vocab_size"] = metadata["vocab_size"]
-        if model_type == "BaseLoop":
+        if model_type in ["BaseLoop", "AdapterLoop"]:
             from src.models.configs import BaseLoopConfig
             cfg_obj = BaseLoopConfig(**model_config)
         elif model_type == "PreludeCoda":
@@ -69,11 +75,11 @@ def main():
         model = MODEL_REGISTRY.build(model_type, config=cfg_obj)
 
     # Load checkpoint
-    if os.path.exists(args.checkpoint_path):
-        model.load_state_dict(torch.load(args.checkpoint_path))
-        print(f"Successfully loaded checkpoint: {args.checkpoint_path}")
-    else:
-        raise FileNotFoundError(f"Checkpoint not found: {args.checkpoint_path}")
+    # if os.path.exists(args.checkpoint_path):
+    #     model.load_state_dict(torch.load(args.checkpoint_path))
+    #     print(f"Successfully loaded checkpoint: {args.checkpoint_path}")
+    # else:
+    #     raise FileNotFoundError(f"Checkpoint not found: {args.checkpoint_path}")
 
     model.eval()
     

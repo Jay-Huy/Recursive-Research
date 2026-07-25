@@ -27,7 +27,13 @@ def main():
     parser.add_argument("--run_name", type=str, default=None, help="Custom name for WandB run")
     parser.add_argument("--batch_size", type=int, default=None, help="Override batch size from config")
     parser.add_argument("--num_epochs", type=int, default=None, help="Override number of epochs from config")
+    parser.add_argument("--seed", type=int, default=None, help="Random seed for PyTorch initialization")
     args = parser.parse_args()
+
+    if args.seed is not None:
+        torch.manual_seed(args.seed)
+        if torch.cuda.is_available():
+            torch.cuda.manual_seed_all(args.seed)
 
     with open(args.config_path, "r") as f:
         config = yaml.safe_load(f)
@@ -69,7 +75,7 @@ def main():
     else:
         # Đối với BaseLoop, PreludeCoda (Dùng Pydantic config class)
         model_config["vocab_size"] = metadata["vocab_size"]
-        if model_type == "BaseLoop":
+        if model_type in ["BaseLoop", "AdapterLoop"]:
             from src.models.configs import BaseLoopConfig
             cfg_obj = BaseLoopConfig(**model_config)
         elif model_type == "PreludeCoda":

@@ -48,6 +48,7 @@ Các file config hiện có:
 - `config/prelude_coda_mismatch.yaml` -> Lưu checkpoint tên `PreludeCodaMismatch_final.pt`
 - `config/prelude_coda_mismatch_enforced.yaml` -> Lưu checkpoint tên `PreludeCodaMismatchEnforced_final.pt`
 - `config/trm.yaml` -> Lưu checkpoint tên `TRM_final.pt`
+- `config/adapter_loop.yaml` -> Lưu checkpoint tên `AdapterLoop_final.pt`
 
 *(Lưu ý: Nếu dùng `--test_batches`, tên checkpoint sẽ tự động cộng thêm suffix, ví dụ: `BaseLoop_5batches.pt`)*
 
