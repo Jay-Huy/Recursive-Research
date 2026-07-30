@@ -67,7 +67,7 @@ python scripts/inference.py --config_path config/base_loop.yaml --checkpoint_pat
 
 Ví dụ:
 ```bash
-python scripts/inference.py --config_path config/base_loop.yaml --checkpoint_path outputs/checkpoints/BaseLoop_final.pt --test_batches 5 --num_loops 10
+python scripts/inference.py --config_path config/base_loop.yaml --checkpoint_path outputs/checkpoints/BaseLoop_final.pt --print_samples 20 --num_loops 10
 ```
 
 Hình ảnh sẽ tự động được sinh và lưu tại thư mục tương ứng với Model, ví dụ: `outputs/BaseLoop_5batches_10loops/` hoặc `outputs/BaseLoop/` nếu chạy toàn bộ.

@@ -75,11 +75,11 @@ def main():
         model = MODEL_REGISTRY.build(model_type, config=cfg_obj)
 
     # Load checkpoint
-    # if os.path.exists(args.checkpoint_path):
-    #     model.load_state_dict(torch.load(args.checkpoint_path))
-    #     print(f"Successfully loaded checkpoint: {args.checkpoint_path}")
-    # else:
-    #     raise FileNotFoundError(f"Checkpoint not found: {args.checkpoint_path}")
+    if os.path.exists(args.checkpoint_path):
+        model.load_state_dict(torch.load(args.checkpoint_path))
+        print(f"Successfully loaded checkpoint: {args.checkpoint_path}")
+    else:
+        raise FileNotFoundError(f"Checkpoint not found: {args.checkpoint_path}")
 
     model.eval()
     
@@ -151,7 +151,8 @@ def main():
         "fixed_point": fp_metric.compute()
     }
     
-    folder_name = model_type
+    # folder_name = model_type
+    folder_name = "Fixed-point" if args.checkpoint_path == "outputs/checkpoints/new_base_fixed_point_best_val_acc.pt" else model_type  
     if args.test_batches is not None:
         folder_name += f"_{args.test_batches}batches"
     if args.num_loops is not None:

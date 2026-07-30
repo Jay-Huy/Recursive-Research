@@ -41,38 +41,14 @@ class SimpleLoopModel(nn.Module):
         for name, module in self.named_modules():
             self._init_weights(module, name)
 
-    # def _init_weights(self, module, name=""):
-    #     std = math.sqrt(2 / (5 * self.config.d_model))
-    #     out_proj_std = std / math.sqrt(2 * self.config.effective_expected_depth)
-        
-    #     if isinstance(module, RMSNorm):
-    #         torch.nn.init.ones_(module.weight)
-    #     elif isinstance(module, nn.Linear):
-    #         if "wo" in name or "down_proj" in name:
-    #             torch.nn.init.trunc_normal_(module.weight, mean=0.0, std=out_proj_std, a=-3*out_proj_std, b=3*out_proj_std)
-    #         else:
-    #             torch.nn.init.trunc_normal_(module.weight, mean=0.0, std=std, a=-3*std, b=3*std)
-    #         if module.bias is not None:
-    #             torch.nn.init.zeros_(module.bias)
-    #     elif isinstance(module, nn.Embedding):
-    #         torch.nn.init.trunc_normal_(module.weight, mean=0.0, std=std, a=-3*std, b=3*std)
-
     def _init_weights(self, module, name=""):
         std = math.sqrt(2 / (5 * self.config.d_model))
         out_proj_std = std / math.sqrt(2 * self.config.effective_expected_depth)
-        golden_std = std / 2.0
         
         if isinstance(module, RMSNorm):
             torch.nn.init.ones_(module.weight)
         elif isinstance(module, nn.Linear):
-            if "adapter" in name:
-                w_shape = module.weight.shape
-                W = torch.empty(w_shape)
-                torch.nn.init.trunc_normal_(W, mean=0.0, std=golden_std, a=-3*golden_std, b=3*golden_std)
-                if w_shape[0] == w_shape[1]:
-                    W = (W + W.transpose(0, 1)) / 2.0
-                module.weight.data.copy_(W)
-            elif "wo" in name or "down_proj" in name:
+            if "wo" in name or "down_proj" in name:
                 torch.nn.init.trunc_normal_(module.weight, mean=0.0, std=out_proj_std, a=-3*out_proj_std, b=3*out_proj_std)
             else:
                 torch.nn.init.trunc_normal_(module.weight, mean=0.0, std=std, a=-3*std, b=3*std)
@@ -80,6 +56,30 @@ class SimpleLoopModel(nn.Module):
                 torch.nn.init.zeros_(module.bias)
         elif isinstance(module, nn.Embedding):
             torch.nn.init.trunc_normal_(module.weight, mean=0.0, std=std, a=-3*std, b=3*std)
+
+    # def _init_weights(self, module, name=""):
+    #     std = math.sqrt(2 / (5 * self.config.d_model))
+    #     out_proj_std = std / math.sqrt(2 * self.config.effective_expected_depth)
+    #     golden_std = std / 2.0
+        
+    #     if isinstance(module, RMSNorm):
+    #         torch.nn.init.ones_(module.weight)
+    #     elif isinstance(module, nn.Linear):
+    #         if "adapter" in name:
+    #             w_shape = module.weight.shape
+    #             W = torch.empty(w_shape)
+    #             torch.nn.init.trunc_normal_(W, mean=0.0, std=golden_std, a=-3*golden_std, b=3*golden_std)
+    #             if w_shape[0] == w_shape[1]:
+    #                 W = (W + W.transpose(0, 1)) / 2.0
+    #             module.weight.data.copy_(W)
+    #         elif "wo" in name or "down_proj" in name:
+    #             torch.nn.init.trunc_normal_(module.weight, mean=0.0, std=out_proj_std, a=-3*out_proj_std, b=3*out_proj_std)
+    #         else:
+    #             torch.nn.init.trunc_normal_(module.weight, mean=0.0, std=std, a=-3*std, b=3*std)
+    #         if module.bias is not None:
+    #             torch.nn.init.zeros_(module.bias)
+    #     elif isinstance(module, nn.Embedding):
+    #         torch.nn.init.trunc_normal_(module.weight, mean=0.0, std=std, a=-3*std, b=3*std)
 
     def initialize_state(self, input_embeds: torch.Tensor) -> torch.Tensor:
         """
