@@ -4,7 +4,7 @@ model_config:
   n_heads: 8
   scale_mlp: 4
   n_layers: 4
-  max_train_loops: 8
+  max_train_loops: 6
   arch_case: 3
   tie_embeddings: true
 
