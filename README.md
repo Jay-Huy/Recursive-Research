@@ -37,7 +37,7 @@ Nếu bạn chỉ muốn test luồng code mà không muốn chờ chạy hết 
 
 Ví dụ test nhanh 5 batches với số epoch nhỏ (ví dụ 2) và gắn tên run:
 ```bash
-python scripts/train.py --config_path config/test_arch/base_loop.yaml --test_batches 5 --num_epochs 2 --run_name "DryRun_BaseLoop"
+python scripts/train.py --config_path config/base_loop.yaml --num_epochs 2 --batch_size 256 --run_name "DryRun_BaseLoop"
 ```
 
 Các file config hiện có:

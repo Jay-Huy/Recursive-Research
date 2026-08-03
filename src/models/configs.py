@@ -10,7 +10,7 @@ class BaseLoopConfig:
     scale_mlp: int
     n_layers: int
     max_train_loops: int
-    enforced: bool
+    arch_case: int
     tie_embeddings: bool
 
     def __post_init__(self):

@@ -20,11 +20,21 @@ class SimpleLoopModel(nn.Module):
         # Token Embeddings
         self.wte = nn.Embedding(config.vocab_size, config.d_model)
         
-        BlockClass = SandwichBlock # if config.enforced else TransformerPreNormBlock
-        if config.enforced:
+        # Arch Case Routing 
+        if config.arch_case == 1: # Standard Transformer (Pre-Norm)
+            BlockClass = TransformerPreNormBlock
+            self.adapter = nn.Identity()
+        elif config.arch_case == 2: # Sandwich-Norm Transformer
+            BlockClass = SandwichBlock
+            self.adapter = nn.Identity()
+        elif config.arch_case == 3: # Sandwich-Norm + Adapter
+            BlockClass = SandwichBlock
+            self.adapter = nn.Linear(config.d_model, config.d_model, bias=False)
+        elif config.arch_case == 4: # Sandwich-Norm + Adapter + Input Injection
+            BlockClass = SandwichBlock
             self.adapter = nn.Linear(config.d_model * 2, config.d_model, bias=False)
         else:
-            self.adapter = nn.Linear(config.d_model, config.d_model, bias=False)
+            raise ValueError(f"Invalid arch_case: {config.arch_case}")
         
         self.loop_blocks = nn.ModuleList([
             BlockClass(config.d_model, config.n_heads, config.d_model * config.scale_mlp)
@@ -106,11 +116,11 @@ class SimpleLoopModel(nn.Module):
         input_embeds = input_embeds * math.sqrt(self.config.d_model) # embed_scale
         
         # 2. Khởi tạo trạng thái vòng lặp đầu tiên
-        if self.config.enforced:
-            # Enforced logic: state_init bằng noise
+        if self.config.arch_case == 4:
+            # Case 4 (Input Injection): state_init bằng noise
             x = self.initialize_state(input_embeds)
         else:
-            # Base logic: Bắt đầu thẳng từ embeddings
+            # Case 1, 2, 3: Bắt đầu thẳng từ embeddings
             x = input_embeds
 
         last_hidden_states_loops = []
@@ -120,11 +130,12 @@ class SimpleLoopModel(nn.Module):
         
         # 3. Chạy vòng lặp
         for loop_idx in range(num_loops):
-            # 3a. Input Injection
-            if self.config.enforced:
-                # Reference Huginn-0125: injection_type = "linear" (Concat -> Linear)
+            # 3a. Input Injection / Adapter
+            if self.config.arch_case == 4:
+                # Concat -> Adapter
                 x = self.adapter(torch.cat([x, input_embeds], dim=-1))
             else:
+                # Qua Adapter (Linear hoặc Identity)
                 x = self.adapter(x)
             
             # 3b. Execute loop blocks

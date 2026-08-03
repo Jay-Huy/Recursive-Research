@@ -74,12 +74,12 @@ def main():
             cfg_obj = PreludeCodaConfig(**model_config)
         model = MODEL_REGISTRY.build(model_type, config=cfg_obj)
 
-    # Load checkpoint
-    if os.path.exists(args.checkpoint_path):
-        model.load_state_dict(torch.load(args.checkpoint_path))
-        print(f"Successfully loaded checkpoint: {args.checkpoint_path}")
-    else:
-        raise FileNotFoundError(f"Checkpoint not found: {args.checkpoint_path}")
+    # # Load checkpoint
+    # if os.path.exists(args.checkpoint_path):
+    #     model.load_state_dict(torch.load(args.checkpoint_path))
+    #     print(f"Successfully loaded checkpoint: {args.checkpoint_path}")
+    # else:
+    #     raise FileNotFoundError(f"Checkpoint not found: {args.checkpoint_path}")
 
     model.eval()
     
